@@ -1,10 +1,12 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../../Provider/AuthProvider';
 import BookingRow from '../BookService/BookingRow';
+import { useNavigate } from 'react-router-dom';
 
 const Bookings = () => {
    const {user} = useContext(AuthContext);
    const [bookings, setBookings] = useState([]);
+   const navigate = useNavigate();
 
    const url = `http://localhost:5000/bookings?email=${user?.email}`;
    useEffect( () => {
@@ -16,9 +18,16 @@ const Bookings = () => {
     })
     .then(res => res.json()
     .then(data => {
-        setBookings(data);
+        if(!data.error){
+          setBookings(data);
+        }
+        else{
+          // logOut and then navigate
+            navigate('/');
+        }
+        
     }))
-   }, [url])
+   }, [url, navigate]);
 
    const handleDelete = id => {
     const proceed = confirm("Are you sure you want to delete this")
